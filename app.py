@@ -3,6 +3,13 @@ import streamlit as st
 
 st.set_page_config(page_title="Ардын Эрх Онооны Тайлан", layout="wide")
 
+try:
+    st.write("✅ Booting app...")
+except Exception as e:
+    st.error("❌ App crashed while starting.")
+    st.exception(e)
+    st.stop()
+
 pages = {
     "Эхлэл": [
         st.Page("home.py", title="ДАТАСЕТ ТОВЧ ТАЙЛАН"),

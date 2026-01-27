@@ -3,7 +3,7 @@ import pandas as pd
 
 @st.cache_data(show_spinner=True)
 def load_data():
-    df = pd.read_parquet("ardiin_erh_code_grouped_2024_2025.pqt")
+    df = pd.read_parquet("ardiin_erh_code_grouped_2024_2025.pqt", engine="pyarrow")
 
     # ensure datetime (critical)
     df["TXN_DATE"] = pd.to_datetime(df["TXN_DATE"], errors="coerce")
