@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from data_loader import load_data, get_lookup, warm_year_cache
+from data_loader import load_data, get_lookup
 import time
 
 df = load_data()
