@@ -4,36 +4,12 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-
-from data_loader import load_segment_counts_cutoff_fast, get_page1_bundle
-
+from data_loader import load_precomputed_page1
 st.title("ХЭРЭГЛЭГЧДИЙН ОНООНЫ ТАРХАЦ")
 
 color_2025 = "#3498DB"
 
-# ✅ Do NOT load data on import instantly
-# Instead: let user trigger it OR lazy-load with spinner
-with st.sidebar:
-    st.subheader("⚙️ Page 1 Data")
-    load_now = st.button("📦 Load Page 1 Data", type="primary")
-
-if "page1_bundle" not in st.session_state:
-    st.session_state.page1_bundle = None
-
-if load_now and st.session_state.page1_bundle is None:
-    with st.spinner("Loading data & precomputing stats (first run can take time)..."):
-        st.session_state.page1_bundle = get_page1_bundle()
-
-bundle = st.session_state.page1_bundle
-
-if bundle is None:
-    st.info("👉 Click **'Load Page 1 Data'** in the sidebar to load and compute the dataset.")
-    st.stop()
-
-# ✅ Now safe to use
-df = bundle["df"]
-user_level_stat_monthly = bundle["user_level_stat_monthly"]
-monthly_reward_stat = bundle["monthly_reward_stat"]
+user_level_stat_monthly, monthly_reward_stat, segment_counts_all = load_precomputed_page1()
 
 tab1, tab2, tab3 = st.tabs(
     [
@@ -118,7 +94,7 @@ with tab3:
 with tab2:
     cutoffs = [400, 500, 600, 700, 800, 900]
 
-    segment_counts_all = load_segment_counts_cutoff_fast(user_level_stat_monthly, cutoffs)
+    
 
     fig = px.line(
         segment_counts_all,
@@ -146,6 +122,8 @@ with tab2:
             **харьцангуй тогтвортой хэлбэлзэлтэй**
             """
         )
+
+    st.dataframe(segment_counts_all)
 
 # ---------------- TAB 1 ----------------
 with tab1:
@@ -213,16 +191,16 @@ with tab1:
 
     st.plotly_chart(fig,)
 
-    with st.expander(expanded=True, label="Тайлбар:"):
-        st.subheader("Ерөнхий тойм")
-        st.markdown(
-            f"""
-            - **2024-2025** онуудад нийт **{df['CUST_CODE'].nunique():,}** хэрэглэгч урамшууллын хөтөлбөрт хамрагдсан байна.
-            - 2024 онд: **{df_2024['total_new_users'].sum():,}** хэрэглэгч
-            - 2025 онд: **56,267** хэрэглэгч. (29,995 хэрэглэгчид бүх жилд ороролцсон)
-            - Сард дунджаар **{df.groupby('MONTH_NUM')['CUST_CODE'].nunique().mean():,.0f}** хэрэглэгч урамшуулалд оролцсон байна.
-            """
-        )
+    # with st.expander(expanded=True, label="Тайлбар:"):
+    #     st.subheader("Ерөнхий тойм")
+    #     st.markdown(
+    #         f"""
+    #         - **2024-2025** онуудад нийт **{user_level_stat_monthly["CUST_CODE"].nunique():,}** хэрэглэгч урамшууллын хөтөлбөрт хамрагдсан байна.
+    #         - 2024 онд: **{df_2024['total_new_users'].sum():,}** хэрэглэгч
+    #         - 2025 онд: **56,267** хэрэглэгч. (29,995 хэрэглэгчид бүх жилд ороролцсон)
+    #         - Сард дунджаар **{df.groupby('MONTH_NUM')['CUST_CODE'].nunique().mean():,.0f}** хэрэглэгч урамшуулалд оролцсон байна.
+    #         """
+    #     )
 
     with st.expander(expanded=False, label="Хүснэгт харах:"):
         st.dataframe(monthly_reward_stat, hide_index=True)
