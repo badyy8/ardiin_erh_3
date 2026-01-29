@@ -62,6 +62,16 @@ def filter_df_by_year(df: pd.DataFrame, year: int) -> pd.DataFrame:
     out = df[df["year"] == year]
     return out.copy()
 
+@st.cache_data(show_spinner=False) 
+def get_most_growing_loyal_code_from_monthly(movers_monthly: pd.DataFrame, year: int): 
+    df = movers_monthly[movers_monthly["year"] == year].copy() # Enforce > 6 active months 
+    df = df.groupby("LOYAL_CODE", observed=True).filter(lambda x: x["MONTH_NUM"].nunique() > 6) 
+    stats = df.groupby("LOYAL_CODE", observed=True)["TXN_AMOUNT"].agg(first="first", last="last") 
+    stats = stats[stats["first"] > 0] 
+    stats["PCT_INCREASE"] = ((stats["last"] - stats["first"]) / stats["first"]) * 100 
+    movers_df = ( stats[(stats["PCT_INCREASE"] > 20) & (stats["last"] > 100_000)] 
+                 .sort_values("PCT_INCREASE", ascending=False).head(4).reset_index() ) 
+    return movers_df["LOYAL_CODE"], movers_df
 
 # ------------------- PRECOMPUTED LOADERS -------------------
 
