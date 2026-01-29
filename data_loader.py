@@ -9,7 +9,7 @@ LOOKUP_PATH = Path("loyalty_lookup_2.csv")
 
 
 @st.cache_resource(show_spinner=True)
-def load_data_base() -> pd.DataFrame:
+def load_data() -> pd.DataFrame:
     """
     Load the main parquet ONCE as a resource (best for big data).
     Reduce columns early to save RAM.
@@ -264,3 +264,26 @@ def load_precomputed_page_misc_loyal_avg():
 @st.cache_data(show_spinner=False)
 def load_precomputed_page_misc_reach_frequency():
     return pd.read_parquet("data/page_misc/precomputed_reach_frequency_by_year.pqt", engine="pyarrow")
+
+
+# --------------------- PAGE 5 ----------------------------
+
+@st.cache_data(show_spinner=False)
+def load_precomputed_page5_users_agg():
+    return pd.read_parquet("data/page5/precomputed_users_agg_df.pqt", engine="pyarrow")
+
+@st.cache_data(show_spinner=False)
+def load_precomputed_page5_thresholds():
+    return pd.read_parquet("data/page5/precomputed_thresholds_by_year.pqt", engine="pyarrow")
+
+@st.cache_data(show_spinner=False)
+def load_precomputed_page5_reach_frequency():
+    return pd.read_parquet("data/page5/precomputed_reach_frequency_by_year.pqt", engine="pyarrow")
+
+@st.cache_data(show_spinner=False)
+def load_precomputed_page5_monthly_points():
+    return pd.read_parquet("data/page5/precomputed_monthly_customer_points.pqt", engine="pyarrow")
+
+@st.cache_data(show_spinner=False)
+def load_precomputed_page5_user_month_profile():
+    return pd.read_parquet("data/page5/precomputed_user_month_profile_achievers.pqt", engine="pyarrow")
