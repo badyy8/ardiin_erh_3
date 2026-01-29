@@ -3,7 +3,6 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 
 from data_loader import (
     load_data, get_lookup,
@@ -30,13 +29,7 @@ selected_year = st.sidebar.selectbox(
 )
 df_year = df[df["year"] == selected_year].copy()
 
-counts_all = load_precomputed_page_misc_counts()
-loyal_avg_all = load_precomputed_page_misc_loyal_avg()
-reach_freq_all = load_precomputed_page_misc_reach_frequency()
 
-counts = counts_all[counts_all["year"] == selected_year].copy()
-loyal_avg = loyal_avg_all[loyal_avg_all["year"] == selected_year].copy()
-reach_frequency = reach_freq_all[reach_freq_all["year"] == selected_year].copy()
 
 st.sidebar.caption(f"Одоогийн сонголт: {selected_year}")
 
@@ -47,6 +40,10 @@ bucket_order = [
 ]
 
 with tab1:
+    counts_all = load_precomputed_page_misc_counts()
+    loyal_avg_all = load_precomputed_page_misc_loyal_avg()
+    counts = counts_all[counts_all["year"] == selected_year].copy()
+    loyal_avg = loyal_avg_all[loyal_avg_all["year"] == selected_year].copy()
     # ------------------------------------------------------------------
     # Prepare data
     # ------------------------------------------------------------------
@@ -197,6 +194,11 @@ with tab1:
 
 
 with tab2:
+
+    
+    reach_freq_all = load_precomputed_page_misc_reach_frequency()
+    reach_frequency = reach_freq_all[reach_freq_all["year"] == selected_year].copy()
+
     fig = px.bar(
         reach_frequency,
         x="Times_Reached_1000",
