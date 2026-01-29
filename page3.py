@@ -12,6 +12,7 @@ def load_base():
 
 df = load_base()
 df = df[(df.TXN_DATE >= "2025-01-01") & (df.TXN_DATE <= "2025-12-31")]
+st.write("Columns:", df.columns.tolist())
 
 
 

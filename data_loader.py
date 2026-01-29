@@ -25,6 +25,7 @@ def load_data() -> pd.DataFrame:
         "TXN_AMOUNT",
         "LOYAL_CODE",
         "JRNO",
+        "CODE_GROUP"
     ]
     existing = [c for c in keep_cols if c in df.columns]
     df = df[existing].copy()

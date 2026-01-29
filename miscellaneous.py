@@ -48,7 +48,13 @@ with tab1:
         template="plotly_white",
         height=500
     )
-    fig1.update_layout(title_text="<b>Хэрэглэгчдийн Онооны Тархалт (Сараар)</b>", title_x=0.5)
+    fig1.update_layout(
+        title_text="<b>Хэрэглэгчдийн Онооны Тархалт</b>", 
+        title = {
+            'xanchor' : 'center',
+            'x': 0.5
+        },
+    )
     st.plotly_chart(fig1, use_container_width=True)
 
     # --- Plot 2: Average Points ---
@@ -60,7 +66,13 @@ with tab1:
         labels={'DESC': 'УРАМШУУЛЛЫН НЭР', 'AVG': 'ДУНДАЖ ОНОО'}
     )
     st.divider()
-    st.subheader("Нэгж гүйлгээний дундаж урамшууллын онооны шинжилгээ")
+    fig2.update_layout(
+        title_text="<b>Нэгж гүйлгээний дундаж урамшууллын онооны шинжилгээ</b>", 
+        title = {
+            'xanchor' : 'center',
+            'x': 0.5
+        },
+    )
     st.plotly_chart(fig2, use_container_width=True)
 
     # --- Analysis Section (Memory Optimized) ---
@@ -90,9 +102,15 @@ with tab2:
         reach_frequency,
         x="Times_Reached_1000", y="Number_of_Users", text="Number_of_Users",
         color="Number_of_Users", color_continuous_scale="Blues",
-        template="plotly_white"
+        template="plotly_white",
     )
-    fig3.update_layout(showlegend=False, title_text=f"<b>{selected_year} Босго давсан байдал</b>")
+    
+    fig3.update_layout(showlegend=False, title_text=f"<b>{selected_year} онд хэрэглэгчдийн босго давсан давтамж</b>",
+        xaxis=dict(
+            tickmode = 'linear'
+        ),
+    )
     st.plotly_chart(fig3, use_container_width=True)
 
-    st.info(f"{selected_year} онд нийт **{reach_frequency['Number_of_Users'].sum():,}** хэрэглэгч 1000 оноо давсан.")
+    reach_frequency['Total'] = reach_frequency['Number_of_Users'] * reach_frequency['Times_Reached_1000']
+    st.info(f"{selected_year} онд нийт **{reach_frequency['Number_of_Users'].sum():,}** хэрэглэгч нийт **{reach_frequency['Total'].sum():,}** удаа 1000 оноо давсан.")
