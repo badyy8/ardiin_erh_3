@@ -131,65 +131,65 @@ with tab1:
     st.plotly_chart(fig,width='stretch')
     st.caption('Нийт оноонд 1% аас илүү хувь нэмэр оруулсан, дундаж оноогоор топ 10-т орсон гүйлгээнүүдийг жагсаав.')
      
-    with st.expander(expanded=False, label="Тайлбар:"):
+    # with st.expander(expanded=False, label="Тайлбар:"):
 
-        st.markdown("""
-        ### Графикийн тайлбар
-        - Гүйлгээний төрлүүдийг **нэг гүйлгээнд ногдох дундаж урамшууллын оноогоор** харьцуулсан  
-        - **Багана:** Дундаж онооны хэмжээ  
-        - **Баганан дээрх хувь:** Гүйлгээний нийт оноонд эзлэх хувь  
-        """)
+    #     st.markdown("""
+    #     ### Графикийн тайлбар
+    #     - Гүйлгээний төрлүүдийг **нэг гүйлгээнд ногдох дундаж урамшууллын оноогоор** харьцуулсан  
+    #     - **Багана:** Дундаж онооны хэмжээ  
+    #     - **Баганан дээрх хувь:** Гүйлгээний нийт оноонд эзлэх хувь  
+    #     """)
 
 
-        df_year_summary = loyal_avg.copy()
+    #     df_year_summary = loyal_avg.copy()
 
-        # If loyal_avg has year column, filter correctly
-        if "year" in df_year_summary.columns:
-            df_year_summary = df_year_summary[df_year_summary["year"] == selected_year].copy()
+    #     # If loyal_avg has year column, filter correctly
+    #     if "year" in df_year_summary.columns:
+    #         df_year_summary = df_year_summary[df_year_summary["year"] == selected_year].copy()
 
-        total_loyal_types = df_year_summary["LOYAL_CODE"].nunique()
+    #     total_loyal_types = df_year_summary["LOYAL_CODE"].nunique()
 
-        # Sort by TXN_AMOUNT (most impactful)
-        df_sorted = df_year_summary.sort_values("TXN_AMOUNT", ascending=False).reset_index(drop=True)
+    #     # Sort by TXN_AMOUNT (most impactful)
+    #     df_sorted = df_year_summary.sort_values("TXN_AMOUNT", ascending=False).reset_index(drop=True)
 
-        # Top5 share
-        top5_share = df_sorted.head(5)["TXN_AMOUNT"].sum() / df_sorted["TXN_AMOUNT"].sum() * 100
+    #     # Top5 share
+    #     top5_share = df_sorted.head(5)["TXN_AMOUNT"].sum() / df_sorted["TXN_AMOUNT"].sum() * 100
 
-        # "Top 10% makes 80%" type metric (Pareto-ish)
-        n_top10pct = max(1, int(np.ceil(total_loyal_types * 0.10)))
-        top10pct_share = df_sorted.head(n_top10pct)["TXN_AMOUNT"].sum() / df_sorted["TXN_AMOUNT"].sum() * 100
+    #     # "Top 10% makes 80%" type metric (Pareto-ish)
+    #     n_top10pct = max(1, int(np.ceil(total_loyal_types * 0.10)))
+    #     top10pct_share = df_sorted.head(n_top10pct)["TXN_AMOUNT"].sum() / df_sorted["TXN_AMOUNT"].sum() * 100
 
-        # Top10pct count shown like (x/total)
-        top10pct_count_text = f"{n_top10pct}/{total_loyal_types}"
+    #     # Top10pct count shown like (x/total)
+    #     top10pct_count_text = f"{n_top10pct}/{total_loyal_types}"
 
-        # 10K_TRANSACTION stats (safe even if missing)
-        target_code = "10K_TRANSACTION"
-        target_row = df_year_summary[df_year_summary["LOYAL_CODE"] == target_code]
+    #     # 10K_TRANSACTION stats (safe even if missing)
+    #     target_code = "10K_TRANSACTION"
+    #     target_row = df_year_summary[df_year_summary["LOYAL_CODE"] == target_code]
 
-        target_desc = (
-            target_row["DESC"].dropna().iloc[0]
-            if ("DESC" in target_row.columns and not target_row["DESC"].dropna().empty)
-            else target_code
-        )
+    #     target_desc = (
+    #         target_row["DESC"].dropna().iloc[0]
+    #         if ("DESC" in target_row.columns and not target_row["DESC"].dropna().empty)
+    #         else target_code
+    #     )
 
-        target_points = target_row["TXN_AMOUNT"].sum() if not target_row.empty else 0
+    #     target_points = target_row["TXN_AMOUNT"].sum() if not target_row.empty else 0
 
-        # if df_year exists, get unique users; otherwise show "-"
-        if "df_year" in locals():
-            target_users = df_year[df_year["LOYAL_CODE"] == target_code]["CUST_CODE"].nunique()
-            target_users_text = f"{target_users:,}"
-        else:
-            target_users_text = "—"
+    #     # if df_year exists, get unique users; otherwise show "-"
+    #     if "df_year" in locals():
+    #         target_users = df_year[df_year["LOYAL_CODE"] == target_code]["CUST_CODE"].nunique()
+    #         target_users_text = f"{target_users:,}"
+    #     else:
+    #         target_users_text = "—"
 
-        st.markdown(f"""
-        #### Гүйлгээний шинжилгээ ({selected_year})
+    #     st.markdown(f"""
+    #     #### Гүйлгээний шинжилгээ ({selected_year})
 
-        - **Топ 5** гүйлгээний төрөл нийлээд нийт онооны **{top5_share:.1f}%**-ийг бүрдүүлж байна.
-        - Бүх гүйлгээний төрлүүдийн **10%** ({top10pct_count_text}) нь нийт онооны **{top10pct_share:.1f}%**-ийг бүрдүүлж байна.
+    #     - **Топ 5** гүйлгээний төрөл нийлээд нийт онооны **{top5_share:.1f}%**-ийг бүрдүүлж байна.
+    #     - Бүх гүйлгээний төрлүүдийн **10%** ({top10pct_count_text}) нь нийт онооны **{top10pct_share:.1f}%**-ийг бүрдүүлж байна.
 
-        #### {target_desc} ({target_code})
-        - {selected_year} онд нийт **{target_users_text}** хэрэглэгчдэд **{target_points:,.0f}** оноо тараагдсан.
-        """)
+    #     #### {target_desc} ({target_code})
+    #     - {selected_year} онд нийт **{target_users_text}** хэрэглэгчдэд **{target_points:,.0f}** оноо тараагдсан.
+    #     """)
 
 
 
