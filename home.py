@@ -59,12 +59,8 @@ with st.expander('Датасетийн ерөнхий мэдээлэл', expande
         st.info("**CUST_CODE & DATE**")
         st.write(f"* **Нийт өвөрмөц хэрэглэгч:** {df.CUST_CODE.nunique():,} хэрэглэгч")
         st.write(f"* **Хугацаа:** 2024.01.01 – 2025.12.31")
-        
-        st.info("**OPER_CODE**")
-        st.write(f"* **Нийт өвөрмөц төлбөрийн сонголт:** {df['OPER_CODE'].nunique()} төрөл")
+    
 
-
-loyal = get_lookup()
 
 # available_years = sorted(df["year"].unique())
 # selected_year = st.sidebar.selectbox("Жил сонгох", available_years, index=len(available_years)-1)
