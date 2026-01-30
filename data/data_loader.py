@@ -14,7 +14,7 @@ def load_data() -> pd.DataFrame:
     """
     df = pd.read_parquet(DATA_PATH)
 
-    # Keep only columns used across your pages (reduce RAM massively)
+    # Keep only columns used across your pages (reduce RAM)
     keep_cols = [
         "TXN_DATE",
         "CUST_CODE",
@@ -34,7 +34,6 @@ def load_data() -> pd.DataFrame:
 
     df["year"] = df["TXN_DATE"].dt.year.astype("int16")
 
-    # If you still need year_month sometimes
     df["year_month"] = df["TXN_DATE"].dt.to_period("M").astype(str)
 
     # Dtypes
@@ -42,7 +41,6 @@ def load_data() -> pd.DataFrame:
     df["MONTH_NUM"] = df["MONTH_NUM"].astype("int16")
     df["TXN_AMOUNT"] = pd.to_numeric(df["TXN_AMOUNT"], errors="coerce").fillna(0).astype("int32")
 
-    # LOYAL_CODE is often high-cardinality -> category saves RAM
     if "LOYAL_CODE" in df.columns:
         df["LOYAL_CODE"] = df["LOYAL_CODE"].astype("category")
 
@@ -71,6 +69,47 @@ def get_most_growing_loyal_code_from_monthly(movers_monthly: pd.DataFrame, year:
     movers_df = ( stats[(stats["PCT_INCREASE"] > 20) & (stats["last"] > 100_000)] 
                  .sort_values("PCT_INCREASE", ascending=False).head(4).reset_index() ) 
     return movers_df["LOYAL_CODE"], movers_df
+
+
+def compute_new_2025_users_monthly(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Computes monthly stats for users whose FIRST_YEAR (first transaction year) is 2025.
+
+    Output columns:
+    - MONTH (1..12)
+    - NEW_USERS (unique customers)
+    - POINTS (sum of TXN_AMOUNT)
+    """
+
+    df = df.copy()
+
+    df["TXN_DATE"] = pd.to_datetime(df["TXN_DATE"], errors="coerce")
+    df = df[df["TXN_DATE"].notna()].copy()
+
+    df["MONTH"] = df["TXN_DATE"].dt.month
+
+    # FIRST YEAR per customer
+    first_year = (
+        df.groupby("CUST_CODE", observed=True)["year"]
+        .min()
+        .reset_index(name="FIRST_YEAR")
+    )
+
+    df2 = df.merge(first_year, on="CUST_CODE", how="left")
+    df2["IS_NEW_2025"] = df2["FIRST_YEAR"] == 2025
+
+    new_2025_users_monthly = (
+        df2[df2["IS_NEW_2025"]]
+        .groupby("MONTH", observed=True)
+        .agg(
+            NEW_USERS=("CUST_CODE", "nunique"),
+            POINTS=("TXN_AMOUNT", "sum"),
+        )
+        .reset_index()
+        .sort_values("MONTH")
+    )
+
+    return new_2025_users_monthly
 
 # ------------------- PRECOMPUTED LOADERS -------------------
 

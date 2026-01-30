@@ -1,5 +1,5 @@
 import streamlit as st
-from data.data_loader import load_data
+from data.data_loader import load_data,compute_new_2025_users_monthly
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
@@ -10,9 +10,10 @@ from plotly.subplots import make_subplots
 def load_base():
     return load_data()
 
-df = load_base()
-df = df[(df.TXN_DATE >= "2025-01-01") & (df.TXN_DATE <= "2025-12-31")]
+df_full = load_base()
+new_2025_users_monthly = compute_new_2025_users_monthly(df_full)
 
+df = df_full[(df_full.TXN_DATE >= "2025-01-01") & (df_full.TXN_DATE <= "2025-12-31")]
 
 
 st.header('ОНЦЛОХ САРЫН ШИНЖИЛГЭЭ 2025 ОН', anchor='center')
@@ -250,50 +251,39 @@ with tab1:
 with tab2:
 
     with st.expander(label='Шинэ Хэрэглэгчийн Шинжилгээ:', expanded=True):
+
         col1,col2 = st.columns([0.6,0.4])
-        with col1:
-            user_first_month = df.groupby('CUST_CODE',observed=True)['MONTH_NUM'].min().reset_index()
-            cust_point_monthly = df.groupby(['CUST_CODE', 'MONTH_NUM'],observed=True)['TXN_AMOUNT'].sum().reset_index()
-            new_user_df = pd.merge(left=user_first_month, right=cust_point_monthly, on=['CUST_CODE','MONTH_NUM'],how='left')
-            new_user_df = new_user_df.groupby('MONTH_NUM',observed=True).agg({
-                'CUST_CODE': 'nunique',
-                'TXN_AMOUNT':'sum'
-            }).reset_index()
-            new_user_df = new_user_df[new_user_df['MONTH_NUM'] > 1]
-
-
-
+        
+        with col1:    
             fig = make_subplots(
-                    specs=[[{"secondary_y": True}]]
+                specs=[[{"secondary_y": True}]]
             )
-            colors = ['lightslategray',] * 11
-            colors[5:7] =['crimson', 'crimson']
+            colors = ['lightslategray',] * 12
+            colors[6:8] =['crimson', 'crimson']
 
             fig.add_trace(
                 go.Bar(
-                    x = new_user_df['MONTH_NUM'],
-                    y = new_user_df['TXN_AMOUNT'],
+                    x = new_2025_users_monthly['MONTH'],
+                    y = new_2025_users_monthly['POINTS'],
                     name = 'Шинэ Хэрэглэгчдийн Оноо',
-                    text= new_user_df['CUST_CODE'],
+                    text= new_2025_users_monthly['NEW_USERS'],
                     textposition='outside',
                     texttemplate='%{text:,}',
                     marker_color = colors,
                     hovertemplate=("Нийт оноо %{y:,.0f}" \
                             "<extra></extra>")
-                ),
-                secondary_y=False
-            )
+                    ),
+                    secondary_y=False
+                )
 
             fig.add_trace(
                 go.Scatter(
-                    x = new_user_df['MONTH_NUM'],
-                    y= new_user_df['CUST_CODE'],
+                    x = new_2025_users_monthly['MONTH'],
+                    y= new_2025_users_monthly['NEW_USERS'],
                     name = 'Шинэ Хэрэглэгчдийн Тоо'
-                    #labels={'MONTH_NUM': 'Сар' , 'IS_NEW_USER': 'Шинэ Хэрэглэгчдийн тоо'}
-
                 ),
-                secondary_y=True
-            )
+                    secondary_y=True
+                )
             fig.update_layout(
 
                 legend = dict(
@@ -311,9 +301,9 @@ with tab2:
                 ),
                 xaxis=dict(
                     tickmode = 'linear'
-                ),
+                    ),
 
-                margin=dict(t=90, b=0, l=50, r=50)
+                        margin=dict(t=90, b=0, l=50, r=50)
 
             )
             fig.update_yaxes(
@@ -325,11 +315,11 @@ with tab2:
 
             fig.update_yaxes(
                     title_text="Нийт Хэрэглэгчдийн тоо",
-                    secondary_y=True,
-                    rangemode='tozero'
-                )
-            
-            
+                            secondary_y=True,
+                            rangemode='tozero'
+                        )
+                    
+                    
             fig.update_xaxes(
                     title_text="Сар",
                 )
