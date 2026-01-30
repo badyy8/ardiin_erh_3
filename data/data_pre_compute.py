@@ -115,6 +115,7 @@ def map_code_group(code: str) -> str:
         "10K_CHARGE_CUPCAKE",
         "10K_CHARGE_CUPCAKE_1",
         "10K_TULBUR_TSES",
+        '10K_TRANSACTION_CARD'
     }:
         return "Core Transactions"
 
