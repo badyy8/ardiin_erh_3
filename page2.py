@@ -4,7 +4,7 @@ import plotly.express as px
 import pandas as pd
 import numpy as np
 
-from data_loader import (
+from data.data_loader import (
     get_lookup,
     load_precomputed_page2,
     load_page2_codegroup_map,
@@ -20,11 +20,23 @@ movers_monthly = load_page2_movers_monthly()
 
 available_years = sorted(transaction_summary["year"].unique())
 
+main_order = [
+    "Core Transactions",
+    "Financial Transactions",
+    "Account Opening",
+    "Investments & Securities",
+    "Merchant & Lifestyle",
+    "Insurance",
+    "Campaigns & Events",
+    "Other",
+]
+all_groups = [g for g in main_order if g in transaction_summary["GROUP"].unique()]
+
 tab1, tab2, tab3, tab4 = st.tabs(["METHODOLOGY", "ГҮЙЛГЭЭНИЙ ОНООНЫ ТАРХАЦ", 'ГҮЙЛГЭЭНИЙ ТӨРЛИЙН ШИНЖИЛГЭЭ (БҮЛЭГЛЭСЭН)', 'ГҮЙЛГЭЭНИЙ ШИНЖИЛГЭЭ'])
 
 @st.cache_data(show_spinner=False)
 def build_animation_fig(transaction_summary):
-    all_groups = sorted(transaction_summary["GROUP"].unique())
+
     fig = px.scatter(
         transaction_summary,
         x='Total_Users',
@@ -82,6 +94,8 @@ def donut_plot(df, labels_col, values_col, title_text=""):
     return fig
 
 with tab1:
+    
+
     with st.expander("Гүйлгээний ангиллын аргачлал", expanded=True):
         st.markdown(
             """
@@ -92,29 +106,27 @@ with tab1:
 
             #### Ангиллын үндсэн зарчим
 
-            **1. Санхүүгийн гүйлгээ (Financial Transactions)**  
-            Мөнгө шилжүүлэлт, төлбөр, зээлийн эргэн төлөлт болон картын гүйлгээнүүд.  
+            **1. Өдөр тутмын гүйлгээ (Core Transactions)**  
+            Түгээмэл, үндсэн төлбөр тооцооны гүйлгээнүүд (жишээ: `10K_TRANSACTION`).
 
-            **2. Данс нээлт (Account Opening)**  
+            **2. Санхүүгийн гүйлгээ (Financial Transactions)**  
+            Мөнгө шилжүүлэлт, төлбөр, картын цэнэглэлт, affiliate болон санхүүгийн холбоотой бусад гүйлгээнүүд
+
+            **3. Данс нээлт (Account Opening)**  
             Хадгаламж, үнэт цаас, тэтгэврийн болон бусад данс нээхтэй холбоотой урамшууллууд.  
 
-            **3. Хөрөнгө оруулалт ба үнэт цаас (Investments & Securities)**  
+            **4. Хөрөнгө оруулалт ба үнэт цаас (Investments & Securities)**  
             Хувьцаа, crypto, арилжаа, 1072 хувьцаа болон хөрөнгө оруулалтын гүйлгээнүүд.  
 
-            **4. Худалдаа, өдөр тутмын хэрэглээ (Merchant & Lifestyle)**  
+            **5. Худалдаа, өдөр тутмын хэрэглээ (Merchant & Lifestyle)**  
             Худалдааны түнш, сугалаа, бараа үйлчилгээтэй холбоотой гүйлгээнүүд.  
 
-            **5. Даатгал (Insurance)**  
+            **6. Даатгал (Insurance)**  
             Даатгалын бүтээгдэхүүн болон даатгалтай холбоотой урамшуулалууд.  
 
-            **6. Урамшуулалын аян, арга хэмжээ (Campaigns & Events)**  
+            **7. Урамшуулалын аян, арга хэмжээ (Campaigns & Events)**  
             Маркетингийн кампанит ажил, Investor Week, сургалт, эвентүүд.  
 
-            **7. Social оролцоо (Social & Engagement)**  
-            Сошиал идэвхжил, мэдээлэл унших, селфи, контент хуваалцах үйлдлүүд.  
-
-            **8. Бүс нутгийн аян (Geographic Campaigns)**  
-            Тодорхой аймаг, хотод чиглэсэн кампанит ажлууд.
             """,
     )
         st.dataframe(codegroup_map, width='stretch', hide_index=True)
@@ -366,13 +378,15 @@ with tab3:
     line_chart_df = grouped_reward[['CODE_GROUP', 'year_month', 'TOTAL_AMOUNT']]
     line_chart_df = line_chart_df.sort_values('year_month')
 
-    line_chart_fig = px.line(line_chart_df, 
+    line_chart_fig = px.line(
+            line_chart_df, 
             x = 'year_month', 
             y = 'TOTAL_AMOUNT', 
             color = 'CODE_GROUP',
             markers=True,
             title='Урамшууллын Бүлгийн Чиг Хандлага Сараар',
-            labels={'year_month': 'Сар', 'TOTAL_AMOUNT': 'Нийт Оноо'}
+            labels={'year_month': 'Сар', 'TOTAL_AMOUNT': 'Нийт Оноо'},
+            category_orders={"CODE_GROUP": all_groups}
     )
     line_chart_fig.update_layout( 
         title=dict(

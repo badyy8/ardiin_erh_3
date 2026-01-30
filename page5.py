@@ -3,7 +3,7 @@ import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
 
-from data_loader import (
+from data.data_loader import (
     get_lookup,
     load_precomputed_page5_users_agg,
     load_precomputed_page5_thresholds,

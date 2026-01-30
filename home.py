@@ -1,12 +1,12 @@
 import streamlit as st
 import pandas as pd
-from data_loader import load_data, get_lookup
+from data.data_loader import load_data, get_lookup
 import time
 
 df = load_data()
 
 st.title('АРДЫН ЭРХ ОНООНЫ ДАТАСЕТ ТОВЧ ТАЙЛАН')
-st.caption('Descriptive Analysis Report (2024.01.01 – 2025.12.31)')
+st.caption(f'Descriptive Analysis Report ({str(df.TXN_DATE.min()).split()[0]} - {str(df.TXN_DATE.max()).split()[0]})')
 
 # 1. Executive Summary
 st.markdown("""

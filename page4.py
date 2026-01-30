@@ -1,5 +1,5 @@
 import streamlit as st
-from data_loader import load_data, get_lookup, load_precomputed_page4
+from data.data_loader import load_data, get_lookup, load_precomputed_page4
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd

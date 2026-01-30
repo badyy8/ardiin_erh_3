@@ -1,5 +1,5 @@
 import streamlit as st
-from data_loader import load_data, get_lookup
+from data.data_loader import load_data
 import plotly.graph_objects as go
 import plotly.express as px
 import pandas as pd
@@ -12,7 +12,6 @@ def load_base():
 
 df = load_base()
 df = df[(df.TXN_DATE >= "2025-01-01") & (df.TXN_DATE <= "2025-12-31")]
-st.write("Columns:", df.columns.tolist())
 
 
 
@@ -275,9 +274,9 @@ with tab2:
                     x = new_user_df['MONTH_NUM'],
                     y = new_user_df['TXN_AMOUNT'],
                     name = 'Шинэ Хэрэглэгчдийн Оноо',
-                    text= new_user_df['TXN_AMOUNT'],
-                    textposition='inside',
-                    texttemplate='%{y:,}',
+                    text= new_user_df['CUST_CODE'],
+                    textposition='outside',
+                    texttemplate='%{text:,}',
                     marker_color = colors,
                     hovertemplate=("Нийт оноо %{y:,.0f}" \
                             "<extra></extra>")
@@ -296,9 +295,7 @@ with tab2:
                 secondary_y=True
             )
             fig.update_layout(
-                xaxis=dict(
-                    tickmode = 'linear'
-                ),
+
                 legend = dict(
                     yanchor = 'top',
                     xanchor='right',
@@ -311,12 +308,19 @@ with tab2:
                     xanchor= 'center',
                     x=0.5,
                     text = 'Шинэ Хэрэглэгчдийн Тоо болон Оноо'
-                )
+                ),
+                xaxis=dict(
+                    tickmode = 'linear'
+                ),
+
+                margin=dict(t=90, b=0, l=50, r=50)
+
             )
             fig.update_yaxes(
                     title_text="Нийт Оноо",
                     tickformat=",",
                     secondary_y=False
+                    
                 )
 
             fig.update_yaxes(

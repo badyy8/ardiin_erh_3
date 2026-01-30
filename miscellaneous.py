@@ -4,7 +4,7 @@ import numpy as np
 import plotly.express as px
 
 # Import your loaders
-from data_loader import (
+from data.data_loader import (
     load_data, get_lookup,
     load_precomputed_page_misc_counts,
     load_precomputed_page_misc_loyal_avg,

@@ -4,7 +4,7 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from data_loader import load_precomputed_page1
+from data.data_loader import load_precomputed_page1
 st.title("ХЭРЭГЛЭГЧДИЙН ОНООНЫ ТАРХАЦ")
 
 color_2025 = "#3498DB"
